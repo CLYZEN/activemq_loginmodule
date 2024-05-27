@@ -1,10 +1,14 @@
 package kr.damda;
 
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Map;
+import java.util.Properties;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -20,12 +24,37 @@ public class DatabaseLoginModule implements LoginModule {
     private CallbackHandler callbackHandler;
     private boolean loginSucceeded = false;
     private String username;
+    private String dbUrl;
+    private String dbUsername;
+    private String dbPassword;
 
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler,
         Map<String, ?> sharedState, Map<String, ?> options) {
         this.callbackHandler = callbackHandler;
     }
+
+//    private void loadDbConfig() {
+//        try {
+//            // Assuming conf directory is at the same level as the lib directory where the JAR is located
+//            String configPath = System.getProperty("activemq.conf") + "/dbconfig.properties";
+//            try (InputStream input = new FileInputStream(configPath)) {
+//                Properties prop = new Properties();
+//                prop.load(input);
+//
+//                dbUrl = prop.getProperty("db.url");
+//                dbUsername = prop.getProperty("db.username");
+//                dbPassword = prop.getProperty("db.password");
+//
+//                System.out.println(dbUrl);
+//                System.out.println(dbUsername);
+//                System.out.println(dbPassword);
+//
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     @Override
     public boolean login() throws LoginException {
@@ -67,7 +96,7 @@ public class DatabaseLoginModule implements LoginModule {
         }
 
         // Replace with your actual database connection and query logic
-        try (Connection connection = DriverManager.getConnection("jdbc:mariadb://192.168.167.221:3306/iot", "root", "root1234");
+        try (Connection connection = DriverManager.getConnection("jdbc:mariadb://192.168.167.217:3306/iot", "damda", "damda123");
             PreparedStatement statement = connection.prepareStatement(
                 "SELECT auth_pwd FROM iot_mq_auth WHERE auth_id = ?")) {
             statement.setString(1, username);
